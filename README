@@ -1,0 +1,67 @@
+I'm trying to build a (simulated) CPU out of NAND gates. The purpose of this project is three-fold:
+
+1. Learn something about CPUs and all their subcomponents
+2. Build something cool
+3. Get over my programmer's block (all my recent projects seem to have led to me having trouble doing simple things thanks to using a complex framework (Rails, Spring, Android, etc). I want to try using a simple framework (pure Ruby) to do something complex)
+
+----
+
+components.rb contains all the basic components - and I do mean ALL, I want to keep this as minimal as possible. The components are NAND, Wire, 0, 1, Test and Nil. 
+
+Nil is not really a component, it's just there to make implementation easier. 0, 1 and Test provide inputs, mainly for testing purposes. Wire is implemented to help with timing issues such as those encountered with flip-flops - more on that below. NAND is the workhorse component that does all the computational 'work'.
+
+blackbox.rb contains BlackBox. As the name suggests, this class allows one to combine NAND gates and Wires into larger components, which can then be used without knowledge of their inner workings. BlackBoxes can then be combined into larger BlackBoxes. Although the BlackBox class uses a dash of metaprogramming magic, all this does is provide a nice syntax for defining BlackBoxes; the computational work is still done by the NAND gates.
+
+You can see some examples of the BlackBox-creating syntax in blackboxes.rb - some logic gates and an SRLatch. Eg:
+
+BlackBox.new(:AND, 2,1) do |i|
+  n1 = n(i[0],i[1])
+  n(n1,n1)
+end
+
+The above code defines an AND gate, which has 2 inputs and 1 output. Blackbox.new then defines a new class called "AND", which uses the passed block in its initialization method; ie, the code between "do" and "end" tells us how to build a AND gate. The block takes one argument, an array of inputs to the gate. We then construct a NAND gate, n1, with inputs i[0] and i[1]. We then construct a second NAND gate with takes both its inputs from the output of n1. The last line of the block defines the outputs of the BlackBox, so the output of this second NAND will also be the output of the AND gate.
+
+We can now create an AND gate like so:
+
+a = AND.new(0,1)
+a.on 0 # false
+
+Or alternatively:
+a = AND(1,1)
+a.on 0 # true
+
+(By the way, if you think I'm being intentionally perverse by using single-letter variable names and the specially defined syntax, I did begin with something a bit more verbose. However, I found the terse syntax to actually be more usable.)
+
+###
+
+First problem - timing issues
+
+I knew from the start I'd have to consider time in the simulation. One option would be to have real-world time correspond to simulated time - ie, have all the components periodically update their internal state based on their inputs. However, that would likely have been a nightmare to debug. Instead, each component's "on" function (which returns true or false) takes a single parameter t, for time; so component.on(5) returns the state of the component at time 5.
+
+The first components I defined were logic gates, which just output simple functions of their inputs, and so were straighforward to implement. However, things got trickier when I tried implementing SRLatch (a basic flip-flop). This is because the latch contains two NAND gates, each of which feed into the other. Since NANDs work 'instantaneously' (their output at time t is based on the inputs at time t), this leads to an infinite loop. My solution was to add wires, whose output at time t is equal to their input at (t-1), in between the NAND gates, which slow down the signals passing between the two gates and prevent the infinite loop problem. 
+
+
+BlackBox.new(:SRLatch, 2, 2) do |i|
+  n1 = n(i[0],0)
+  n2 = n(w(n1), i[1])
+  n1.r = w(n2)
+  [n1, n2]
+end
+
+The effect of this implementation is that it takes 2 time cycles for an SRLatch to update:
+
+latch = SRLatch(t(2..10),t(0..5))
+# note the second input turns off at time 6
+
+latch.on 0 # true
+latch.on 1 # true
+latch.on 2 # true
+latch.on 3 # true
+latch.on 4 # true
+latch.on 5 # true
+latch.on 6 # true
+latch.on 7 # false
+latch.on 8 # false
+
+If anyone had any better ideas or insights for how I should deal with time in the simulation, I'd be happy to hear them.
+
