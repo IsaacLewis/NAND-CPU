@@ -45,3 +45,11 @@ BlackBox.new(:FullAdder, 3, 2) do |i|
   ha2 = HalfAdder ha1[0], i[2]
   [ha2[0], OR(ha1[1], ha2[1])]
 end
+
+BlackBox.new(:RippleCarryAdder, 8, 5) do |i|
+  a1 = HalfAdder i[0], i[4]
+  a2 = FullAdder i[1], i[5], a1[1]
+  a3 = FullAdder i[2], i[6], a2[1]
+  a4 = FullAdder i[3], i[7], a3[1]
+  [a1[0], a2[0], a3[0], a4[0], a4[1]]
+end
