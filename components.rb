@@ -40,7 +40,7 @@ end
 
 # A class for providing test inputs. Outputs on at times specified by on_ranges. 
 # Eg, Test.new 0..2, 5..6 will be ON at times 0,1,2,5 and 6, and OFF at times 3,4,7+.
-class Test
+class TestInput
   def initialize(*on_ranges)
     @on_ranges = on_ranges
   end
@@ -51,7 +51,7 @@ class Test
 end
 
 def t(*on_ranges)
-  Test.new *on_ranges
+  TestInput.new *on_ranges
 end
 
 class Nil

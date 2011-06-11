@@ -6,9 +6,9 @@ I'm trying to build a (simulated) CPU out of NAND gates. The purpose of this pro
 
 ----
 
-components.rb contains all the basic components - and I do mean ALL, I want to keep this as minimal as possible. The components are NAND, Wire, 0, 1, Test and Nil. 
+components.rb contains all the basic components - and I do mean ALL, I want to keep this as minimal as possible. The components are NAND, Wire, 0, 1, TestInput and Nil. 
 
-Nil is not really a component, it's just there to make implementation easier. 0, 1 and Test provide inputs, mainly for testing purposes. Wire is implemented to help with timing issues such as those encountered with flip-flops - more on that below. NAND is the workhorse component that does all the computational 'work'.
+Nil is not really a component, it's just there to make implementation easier. 0, 1 and TestInput provide inputs, mainly for testing purposes. Wire is implemented to help with timing issues such as those encountered with flip-flops - more on that below. NAND is the workhorse component that does all the computational 'work'.
 
 blackbox.rb contains BlackBox. As the name suggests, this class allows one to combine NAND gates and Wires into larger components, which can then be used without knowledge of their inner workings. BlackBoxes can then be combined into larger BlackBoxes. Although the BlackBox class uses a dash of metaprogramming magic, all this does is provide a nice syntax for defining BlackBoxes; the computational work is still done by the NAND gates.
 

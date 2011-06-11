@@ -29,6 +29,12 @@ BlackBox.new(:ThreeAND, 3, 1) do |i|
   AndG(AndG(i[0],i[1]), i[2])
 end
 
+BlackBox.new(:Clock, 0, 1) do |i|
+  n1 = NAND.new 1, 0
+  n1.r = w(n1)
+  n1
+end
+
 BlackBox.new(:SRLatch, 2, 2) do |i|
   n1 = n(i[0],0)
   n2 = n(w(n1), i[1])
