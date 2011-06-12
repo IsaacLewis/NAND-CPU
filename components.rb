@@ -1,11 +1,24 @@
 class NAND
   attr_accessor :l, :r
   def initialize(l,r)
+    @cache = []
     @l,@r = l,r
   end
 
-  def on(t)
-    t < 0 ? false : !(@l.on(t) && @r.on(t))
+  def on(time)
+    cached = @cache[time]
+    return cached unless cached.nil?
+
+    return false if time < 0
+
+    # if value isn't in the cache, compute cache values
+    # from end of current cache (@cache.length) to the time we want
+    
+    (@cache.length..time).each do |t|
+      result = !(@l.on(t) && @r.on(t))
+      @cache[t] = result if t >= 0
+    end
+    @cache[time]
   end
 end
 
