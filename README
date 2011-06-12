@@ -12,7 +12,7 @@ Nil is not really a component, it's just there to make implementation easier. 0,
 
 blackbox.rb contains BlackBox. As the name suggests, this class allows one to combine NAND gates and Wires into larger components, which can then be used without knowledge of their inner workings. BlackBoxes can then be combined into larger BlackBoxes. Although the BlackBox class uses a dash of metaprogramming magic, all this does is provide a nice syntax for defining BlackBoxes; the computational work is still done by the NAND gates.
 
-You can see some examples of the BlackBox-creating syntax in blackboxes.rb - some logic gates, adders, and an SRLatch. For example:
+You can see some examples of the BlackBox-creating syntax in blackboxes.rb, which contains the components I've defined so far  - currently some logic gates, adders, and flip-flops. E.g:
 
 BlackBox.new(:AND, 2,1) do |i|
   n1 = n(i[0],i[1])

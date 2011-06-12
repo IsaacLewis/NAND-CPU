@@ -42,6 +42,13 @@ BlackBox.new(:SRLatch, 2, 2) do |i|
   [n1, n2]
 end
 
+BlackBox.new(:DLatch, 2, 2) do |i|
+  n1 = n i[0], i[1]
+  n2 = n NOT(i[0]), i[1]
+  sr = SRLatch n1, n2
+  [sr[0], sr[1]]
+end
+
 BlackBox.new(:HalfAdder, 2, 2) do |i|
   [XOR(i[0], i[1]), AND(i[0],i[1])]
 end
@@ -58,4 +65,8 @@ BlackBox.new(:RippleCarryAdder, 8, 5) do |i|
   a3 = FullAdder i[2], i[6], a2[1]
   a4 = FullAdder i[3], i[7], a3[1]
   [a1[0], a2[0], a3[0], a4[0], a4[1]]
+end
+
+BlackBox.new(:Multiplexer, 3, 1) do |i|
+  OR(AND(i[0], i[2]), AND(NOT(i[0]),i[1]))
 end
